@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La matrice BCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap">
+<style>
+/* ── RESET & BASE ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Fiche d'exercices en thème clair : blocs = séances, cartes dépliables, corrections masquables */
+:root {
+  --bg:        #f4f6f9;
+  --surface:   #ffffff;
+  --card:      #ffffff;
+  --border:    #dfe3ea;
+  --border-hi: #b9c0ce;
+  --text:      #1d2230;
+  --text-dim:  #5c6476;
+  --accent:    #b97d00;
+  --accent-bg: #fff6df;
+  --green:     #1b8047;
+  --green-bg:  #ecf7f0;
+  --green-bd:  #c9e6d4;
+  --green-dk:  #12552f;
+  --red:       #c23b3b;
+  --blue:      #2d69ad;
+  --blue-bg:   #edf3fb;
+  --purple:    #6f45ad;
+  --font-head: 'Syne', 'Trebuchet MS', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radius:    10px;
+  color-scheme: light;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── HEADER ──────────────────────────────────────────────── */
+.site-header {
+  background: linear-gradient(135deg, #ffffff 0%, #eef2f8 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 44px 20px 32px;
+  text-align: center;
+}
+.site-header .kicker {
+  display: inline-block;
+  background: var(--accent);
+  color: #ffffff;
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border-radius: 3px;
+  margin-bottom: 18px;
+}
+.site-header h1 {
+  font-family: var(--font-head);
+  font-size: clamp(24px, 6vw, 38px);
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+.site-header .sub {
+  color: var(--text-dim);
+  font-size: 14px;
+  font-weight: 400;
+  max-width: 540px;
+  margin: 0 auto 20px;
+}
+.legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 0 auto 22px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+}
+
+/* ── NAV ANCRES ──────────────────────────────────────────── */
+.nav-anchors {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.nav-anchors a {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 14px;
+  text-decoration: none;
+  transition: border-color .15s, color .15s;
+}
+.nav-anchors a:hover, .nav-anchors a:focus-visible { border-color: var(--accent); color: var(--accent); }
+
+/* ── CONTENEUR PRINCIPAL ─────────────────────────────────── */
+main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 36px 18px 80px;
+}
+
+/* ── TITRE DE BLOC ───────────────────────────────────────── */
+.bloc-titre {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 52px 0 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.bloc-titre:first-child { margin-top: 0; }
+.bloc-titre .icone { font-size: 26px; flex-shrink: 0; }
+.bloc-titre h2 {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+  text-wrap: balance;
+}
+.bloc-titre h2 small {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+/* ── MÉMO ────────────────────────────────────────────────── */
+.memo {
+  background: var(--green-bg);
+  border: 1px solid var(--green-bd);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin: 16px 0 24px;
+  font-size: 14px;
+  line-height: 1.75;
+}
+.memo .memo-titre {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+.memo code {
+  display: block;
+  background: #ffffff;
+  border: 1px solid var(--green-bd);
+  border-radius: 5px;
+  padding: 8px 12px;
+  color: var(--green-dk);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 13.5px;
+  margin: 5px 0;
+}
+.memo .note { color: var(--text-dim); font-size: 13px; margin-top: 8px; }
+
+/* ── CARTE EXERCICE ──────────────────────────────────────── */
+.exo-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: border-color .15s;
+}
+.exo-card:hover { border-color: var(--border-hi); }
+
+.exo-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+.exo-header::-webkit-details-marker { display: none; }
+.exo-header:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.exo-num {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  min-width: 40px;
+}
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.badge-1 { background: #e9f6ee; color: var(--green); border: 1px solid #bfe2cc; }
+.badge-2 { background: var(--accent-bg); color: #8a5d00; border: 1px solid #efd798; }
+.badge-3 { background: #fbeaea; color: var(--red); border: 1px solid #efc4c4; }
+.badge-exam { background: #f2ecfa; color: var(--purple); border: 1px solid #d9c9ef; }
+
+.exo-titre-txt {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.chevron { color: var(--text-dim); font-size: 13px; flex-shrink: 0; transition: transform .2s; }
+details[open] .chevron { transform: rotate(180deg); }
+
+/* ── CORPS DE L'EXERCICE ─────────────────────────────────── */
+.exo-body { padding: 0 16px 20px; border-top: 1px solid var(--border); }
+
+.contexte {
+  background: var(--blue-bg);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 6px 6px 0;
+  padding: 14px 16px;
+  margin: 16px 0;
+  font-size: 14px;
+  line-height: 1.75;
+}
+.contexte strong { color: var(--text); }
+
+.table-wrap { overflow-x: auto; margin: 12px 0; }
+.tableau-donnees {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: var(--surface);
+}
+.tableau-donnees th {
+  background: #eef1f6;
+  color: var(--text-dim);
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.tableau-donnees td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+}
+.tableau-donnees tr:last-child td { border-bottom: none; }
+.tableau-donnees td.num { font-weight: 700; color: var(--text); white-space: nowrap; }
+
+.questions { margin: 18px 0 0; }
+.question { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+.question .q-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  color: #ffffff;
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 11px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.question p { font-size: 14px; margin: 0; min-width: 0; }
+
+/* ── COUP DE POUCE ───────────────────────────────────────── */
+.ordre-grandeur {
+  background: var(--accent-bg);
+  border: 1px solid #efd798;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #6e4b00;
+  margin: 12px 0 0;
+}
+.ordre-grandeur::before { content: "💡 "; }
+
+/* ── BOUTON CORRECTION ───────────────────────────────────── */
+.btn-corrige {
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  border-radius: 6px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 16px;
+  margin-top: 18px;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-corrige:hover, .btn-corrige:focus-visible { border-color: var(--green); color: var(--green); }
+
+/* ── CORRECTION ──────────────────────────────────────────── */
+.correction {
+  display: none;
+  background: var(--green-bg);
+  border: 1px solid var(--green-bd);
+  border-radius: 6px;
+  padding: 16px;
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.correction.visible { display: block; }
+.correction .corr-etape {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--green-bd);
+}
+.correction .corr-etape:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.correction .c-num {
+  display: inline-block;
+  background: var(--green);
+  color: #ffffff;
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 18px;
+  margin-right: 6px;
+}
+.correction code {
+  display: block;
+  background: #ffffff;
+  border: 1px solid var(--green-bd);
+  border-radius: 4px;
+  padding: 6px 12px;
+  color: var(--green-dk);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  margin: 5px 0;
+}
+.correction .res { font-family: var(--font-head); font-weight: 700; color: var(--text); }
+.correction .conclu { margin-top: 8px; font-size: 13.5px; color: #2c6244; font-style: italic; }
+.correction .tableau-corr { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; background: #ffffff; }
+.correction .tableau-corr th {
+  background: #dff0e6;
+  color: var(--green-dk);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  text-align: left;
+}
+.correction .tableau-corr td { padding: 6px 10px; border-bottom: 1px solid var(--green-bd); color: #24402f; vertical-align: top; }
+.correction .tableau-corr td.val { font-weight: 700; color: var(--green); }
+
+/* ── SÉPARATEUR ──────────────────────────────────────────── */
+hr.section-sep { border: none; border-top: 1px solid var(--border); margin: 54px 0 0; }
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12px;
+  background: var(--surface);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .exo-titre-txt { font-size: 13.5px; }
+  .contexte { font-size: 13.5px; }
+  .tableau-donnees { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="kicker">📊 Pôle 1 – BTS CCST 2e année</div>
+  <h1>La matrice BCG<br>au service de la négociation</h1>
+  <p class="sub">18 exercices en 5 séances, avec l'entreprise Thermiko. Ouvre un exercice, réponds dans ton fichier de cours sur ordinateur, puis vérifie avec la correction.</p>
+  <div class="legende">
+    <span class="badge badge-1">⬆ décollage</span> je découvre
+    <span class="badge badge-2">◆ intermédiaire</span> j'applique
+    <span class="badge badge-exam">★ examen</span> je m'entraîne
+  </div>
+  <nav class="nav-anchors">
+    <a href="#referentiel">0 · Référentiel et objectifs</a>
+    <a href="#lire">1 · Lire la matrice</a>
+    <a href="#calculer">2 · Calculer et placer</a>
+    <a href="#decider">3 · Décider</a>
+    <a href="#negocier">4 · Négocier avec la matrice</a>
+    <a href="#examen">5 · Sujets type E5</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════════════
+     ANCRAGE AU RÉFÉRENTIEL
+══════════════════════════════════════════════════════════ -->
+<div class="bloc-titre" id="referentiel">
+  <span class="icone">🧭</span>
+  <h2><small>Avant de commencer</small>Ancrage au référentiel et objectifs</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 épreuve et critères d'évaluation</div>
+  <code>Épreuve E5 – Conception et négociation de solutions technico-commerciales (pôle d'activités 1).</code>
+  <code>Critère : le contexte technico-commercial et les attentes du prospect sont identifiés.</code>
+  <code>Critère : les objectifs de négociation sont définis et adaptés.</code>
+  <code>Critère : des outils de négociation adaptés sont préparés.</code>
+  <code>Critère : une solution technique et commerciale répondant aux besoins du client est proposée.</code>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 compétences et savoirs associés</div>
+  <code>C1.1 – Préparer une négociation technique et commerciale.</code>
+  <code>C1.2 – Conseiller, prescrire et communiquer tout au long du processus de négociation.</code>
+  <code>Savoirs : situation de marché relatif à l'affaire · offre de produits et services dans le domaine considéré, caractéristiques du marché · positionnement de l'offre par rapport à des solutions alternatives directes et indirectes, avantages comparatifs.</code>
+  <code>Savoirs : objectif stratégique en lien avec la politique commerciale · stratégie de négociation, objectifs de la négociation · argumentaires, tableaux comparatifs de concurrence.</code>
+  <p class="note">La matrice BCG n'est pas citée nommément dans le référentiel. Elle sert ici d'outil d'analyse de la situation de marché et de l'offre (C1.1, C1.2). Lien avec le bloc 3 (C3.2) : gamme, cycle de vie commercial des produits.</p>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🎯 objectifs pédagogiques</div>
+  <code>Objectif final : à partir des données de marché d'une entreprise, construire la matrice BCG de son offre, en déduire la stratégie de chaque produit et fixer des objectifs de négociation cohérents, défendus à l'oral.</code>
+  <code>Objectif intermédiaire 1 : lire une matrice BCG et calculer la part de marché relative et le taux de croissance du marché.</code>
+  <code>Objectif intermédiaire 2 : positionner les produits, en déduire une stratégie et repérer les limites de l'outil.</code>
+  <code>Objectif intermédiaire 3 : traduire la position d'un produit en objectifs et en arguments de négociation, puis l'utiliser pour la situation E5.</code>
+  <p class="note">Matériel : ordinateur et vidéoprojecteur. Thermiko et toutes ses données sont fictives.</p>
+</div>
+
+<div class="contexte">
+  <strong>L'entreprise du fil rouge.</strong> <strong>Thermiko</strong> fabrique et distribue des solutions de génie climatique pour les bâtiments tertiaires (bureaux, cliniques, résidences seniors). Ses clients sont des installateurs et des gestionnaires de bâtiments. <strong>Léa Moreau</strong> est technico-commerciale sur le secteur de Lyon. <strong>Karim Benali</strong> est directeur commercial. <strong>Hugo</strong> est alternant dans l'équipe.
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     BLOC 1 – LIRE LA MATRICE (séance 1)
+══════════════════════════════════════════════════════════ -->
+<div class="bloc-titre" id="lire" style="margin-top:40px">
+  <span class="icone">🔎</span>
+  <h2><small>Séance 1 · 55 min</small>Bloc 1 – Lire une matrice BCG</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 mémo</div>
+  <code>Matrice BCG = outil d'aide à la décision créé par le Boston Consulting Group. Elle représente le portefeuille de produits (ou d'activités) d'une entreprise selon 2 critères.</code>
+  <code>Axe vertical : taux de croissance du marché (attractivité du marché).</code>
+  <code>Axe horizontal : part de marché relative (position face au concurrent principal). Supérieure à 1 = l'entreprise est leader.</code>
+  <code>Vedette = forte croissance + forte part relative · vache à lait = faible croissance + forte part relative · dilemme = forte croissance + faible part relative · poids mort = faible croissance + faible part relative.</code>
+  <code>Taille de la bulle = souvent le chiffre d'affaires du produit.</code>
+  <p class="note">Dans la présentation d'origine, les fortes parts relatives sont à gauche : vedettes en haut à gauche, vaches à lait en bas à gauche. Déroulé : 10 min mémo projeté · 10 min ex. 1 · 10 min ex. 2 en vote à main levée · 15 min ex. 3 · 10 min ex. 4 (pitchs).</p>
+</div>
+
+<!-- EX 1 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 1</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Qui est qui chez Thermiko ?</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Karim projette 4 fiches produits de <strong>Thermiko</strong>. Chaque fiche décrit le marché et la position de l'entreprise.
+    </div>
+    <div class="table-wrap">
+      <table class="tableau-donnees">
+        <tr><th>Produit</th><th>Description</th></tr>
+        <tr><td class="num">A – pompes à chaleur air/eau</td><td>Marché en forte hausse avec la sortie des énergies fossiles. Thermiko est n° 1 du marché.</td></tr>
+        <tr><td class="num">B – climatisation réversible</td><td>Marché installé depuis longtemps, il progresse peu. Thermiko est n° 1 et vend beaucoup.</td></tr>
+        <tr><td class="num">C – pilotage connecté (GTB)</td><td>Marché jeune qui grandit vite. Thermiko vient d'arriver, loin derrière le leader.</td></tr>
+        <tr><td class="num">D – chaudières gaz</td><td>Marché qui recule chaque année. Thermiko est loin derrière le leader.</td></tr>
+      </table>
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Classe chaque produit dans une case de la matrice.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Justifie chaque classement avec les 2 critères.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> pose-toi 2 questions pour chaque produit. Le marché grandit-il vite ? Thermiko est-il devant son concurrent principal ?</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <table class="tableau-corr">
+        <tr><th>Produit</th><th>Croissance</th><th>Position</th><th>Case</th></tr>
+        <tr><td>A – pompes à chaleur</td><td>forte</td><td>leader</td><td class="val">vedette</td></tr>
+        <tr><td>B – climatisation</td><td>faible</td><td>leader</td><td class="val">vache à lait</td></tr>
+        <tr><td>C – pilotage connecté</td><td>forte</td><td>suiveur</td><td class="val">dilemme</td></tr>
+        <tr><td>D – chaudières gaz</td><td>faible (recul)</td><td>suiveur</td><td class="val">poids mort</td></tr>
+      </table>
+      <p class="conclu">Toujours croiser les 2 critères : un seul ne suffit jamais pour classer un produit.</p>
+    </div>
+  </div>
+</details>
+
+<!-- EX 2 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 2</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Vrai ou faux express</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Karim lance un quiz à main levée. Tu as 10 secondes par affirmation.
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Une vache à lait est sur un marché en forte croissance.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Une part de marché relative de 1,5 signifie que l'entreprise est leader.</p></div>
+      <div class="question"><span class="q-num">3</span><p>Les vedettes sont toujours les produits les plus rentables.</p></div>
+      <div class="question"><span class="q-num">4</span><p>Un dilemme peut devenir une vedette ou un poids mort.</p></div>
+      <div class="question"><span class="q-num">5</span><p>Il faut abandonner tout de suite chaque poids mort.</p></div>
+      <div class="question"><span class="q-num">6</span><p>La taille d'une bulle représente souvent le chiffre d'affaires.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> relis le mémo. Pense à l'argent que chaque produit rapporte et à celui qu'il demande.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span> <span class="res">Faux.</span> La vache à lait est sur un marché mature, à faible croissance.</div>
+      <div class="corr-etape"><span class="c-num">2</span> <span class="res">Vrai.</span> Sa part de marché est 1,5 fois celle de son concurrent principal.</div>
+      <div class="corr-etape"><span class="c-num">3</span> <span class="res">Faux.</span> Elles demandent des investissements réguliers pour suivre le marché.</div>
+      <div class="corr-etape"><span class="c-num">4</span> <span class="res">Vrai.</span> Tout dépend des investissements et du succès sur le marché.</div>
+      <div class="corr-etape"><span class="c-num">5</span> <span class="res">Faux.</span> On réduit d'abord l'investissement. Le produit peut encore servir (clients fidèles, services associés).</div>
+      <div class="corr-etape"><span class="c-num">6</span> <span class="res">Vrai.</span> On peut aussi ajouter une couleur (cycle de vie) ou un contour (niveau de concurrence).</div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 3 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 3</span>
+    <span class="badge badge-2">◆ intermédiaire</span>
+    <span class="exo-titre-txt">Lire la matrice de Thermiko</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Karim projette la matrice BCG de <strong>Thermiko</strong> pour l'année N. La limite de croissance retenue par l'entreprise est 10 %.
+    </div>
+    <div class="table-wrap">
+      <svg viewBox="0 0 540 400" width="100%" role="img" aria-label="Matrice BCG de Thermiko" style="max-width:540px;display:block;margin:0 auto;font-family:Inter,system-ui,sans-serif">
+        <rect x="60" y="20" width="220" height="160" fill="#fff6df"/>
+        <rect x="280" y="20" width="220" height="160" fill="#edf3fb"/>
+        <rect x="60" y="180" width="220" height="160" fill="#ecf7f0"/>
+        <rect x="280" y="180" width="220" height="160" fill="#f4f0f0"/>
+        <rect x="60" y="20" width="440" height="320" fill="none" stroke="#b9c0ce"/>
+        <line x1="280" y1="20" x2="280" y2="340" stroke="#5c6476" stroke-dasharray="4 3"/>
+        <line x1="60" y1="180" x2="500" y2="180" stroke="#5c6476" stroke-dasharray="4 3"/>
+        <text x="68" y="36" font-size="11" font-weight="700" fill="#8a5d00">VEDETTES</text>
+        <text x="492" y="36" font-size="11" font-weight="700" fill="#2d69ad" text-anchor="end">DILEMMES</text>
+        <text x="68" y="332" font-size="11" font-weight="700" fill="#1b8047">VACHES À LAIT</text>
+        <text x="492" y="198" font-size="11" font-weight="700" fill="#c23b3b" text-anchor="end">POIDS MORTS</text>
+        <circle cx="170" cy="100" r="37" fill="#b97d00" fill-opacity=".55" stroke="#8a5d00"/>
+        <text x="170" y="104" font-size="12" font-weight="700" text-anchor="middle" fill="#1d2230">A</text>
+        <circle cx="133" cy="218" r="45" fill="#1b8047" fill-opacity=".45" stroke="#12552f"/>
+        <text x="133" y="222" font-size="12" font-weight="700" text-anchor="middle" fill="#1d2230">B</text>
+        <circle cx="445" cy="100" r="7" fill="#2d69ad" fill-opacity=".7" stroke="#2d69ad"/>
+        <text x="445" y="84" font-size="12" font-weight="700" text-anchor="middle" fill="#1d2230">C</text>
+        <circle cx="427" cy="308" r="19" fill="#c23b3b" fill-opacity=".45" stroke="#c23b3b"/>
+        <text x="427" y="312" font-size="12" font-weight="700" text-anchor="middle" fill="#1d2230">D</text>
+        <text x="60" y="358" font-size="11" fill="#5c6476">2</text>
+        <text x="280" y="358" font-size="11" fill="#5c6476" text-anchor="middle">1</text>
+        <text x="500" y="358" font-size="11" fill="#5c6476" text-anchor="end">0</text>
+        <text x="280" y="378" font-size="11" fill="#1d2230" text-anchor="middle">part de marché relative (forte à gauche)</text>
+        <text x="54" y="24" font-size="11" fill="#5c6476" text-anchor="end">30 %</text>
+        <text x="54" y="184" font-size="11" fill="#5c6476" text-anchor="end">10 %</text>
+        <text x="54" y="344" font-size="11" fill="#5c6476" text-anchor="end">-15 %</text>
+        <text x="16" y="180" font-size="11" fill="#1d2230" text-anchor="middle" transform="rotate(-90 16 180)">croissance du marché</text>
+      </svg>
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Indique le produit qui rapporte le plus de chiffre d'affaires.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Cite les produits sur lesquels Thermiko est leader.</p></div>
+      <div class="question"><span class="q-num">3</span><p>Repère le produit le plus petit et explique sa situation.</p></div>
+      <div class="question"><span class="q-num">4</span><p>Formule un risque pour Thermiko à partir de cette matrice.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> la taille des bulles et la ligne verticale (part relative = 1) donnent les réponses 1 et 2.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span> <span class="res">B, la climatisation réversible</span> : c'est la plus grosse bulle.</div>
+      <div class="corr-etape"><span class="c-num">2</span> <span class="res">A et B</span> : leurs bulles sont à gauche de la ligne « 1 ».</div>
+      <div class="corr-etape"><span class="c-num">3</span> <span class="res">C, le pilotage connecté</span> : marché en forte croissance mais Thermiko pèse peu face au leader. C'est un dilemme.</div>
+      <div class="corr-etape"><span class="c-num">4</span> Exemple de risque :
+        <code>Le chiffre d'affaires repose surtout sur la climatisation, un marché qui progresse peu. Il y a peu de produits en relève (petits dilemmes).</code>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 4 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 4</span>
+    <span class="badge badge-exam">★ examen</span>
+    <span class="exo-titre-txt">Le pitch d'une minute pour Hugo</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Hugo, l'alternant, arrive dans l'équipe. Karim demande à Léa de lui expliquer la matrice de Thermiko en une minute, debout, devant l'écran.
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Prépare un pitch d'une minute à partir de la matrice de l'exercice 3.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Présente-le devant le groupe, la matrice projetée derrière toi.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> 3 temps. À quoi sert la matrice ? Que montre-t-elle chez Thermiko ? Que faut-il retenir ?</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span> Exemple de pitch :
+        <code>« La matrice BCG classe nos produits selon la croissance de leur marché et notre position face au concurrent principal. Chez Thermiko, la climatisation est notre vache à lait : elle rapporte le plus. Les pompes à chaleur sont notre vedette : marché en forte hausse, nous sommes n° 1. Le pilotage connecté est un dilemme à surveiller. Les chaudières gaz sont un poids mort. À retenir : la clim finance aujourd'hui les produits de demain. »</code>
+      </div>
+      <div class="corr-etape"><span class="c-num">2</span>
+        <p class="conclu">Points observés par le groupe : durée respectée, vocabulaire juste, regard vers le public, geste vers la matrice.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<hr class="section-sep">
+
+<!-- ══════════════════════════════════════════════════════════
+     BLOC 2 – CALCULER ET PLACER (séance 2)
+══════════════════════════════════════════════════════════ -->
+<div class="bloc-titre" id="calculer" style="margin-top:40px">
+  <span class="icone">🧮</span>
+  <h2><small>Séance 2 · 55 min</small>Bloc 2 – Calculer et placer les produits</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 mémo</div>
+  <code>Part de marché = ventes de l'entreprise ÷ ventes totales du marché × 100</code>
+  <code>Part de marché relative = part de marché de l'entreprise ÷ part de marché du concurrent principal</code>
+  <code>Si l'entreprise est leader, le concurrent principal est le n° 2 du marché. Sinon, c'est le leader.</code>
+  <code>Taux de croissance du marché = (marché N – marché N-1) ÷ marché N-1 × 100</code>
+  <code>Méthode : 1. évaluer chaque produit · 2. fixer les échelles et couper les axes en deux · 3. placer les bulles · 4. analyser.</code>
+  <p class="note">La limite de croissance est fixée par l'entreprise (souvent la croissance moyenne du secteur). Thermiko retient 10 %. Déroulé : 10 min mémo · 10 min ex. 5 · 10 min ex. 6 · 15 min ex. 7 · 10 min ex. 8 au tableur (à terminer en séance 3 si besoin).</p>
+</div>
+
+<!-- EX 5 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 5</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Calculer la part de marché relative</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Léa a trouvé les parts de marché de l'année N dans l'étude du syndicat professionnel (données fictives).
+    </div>
+    <div class="table-wrap">
+      <table class="tableau-donnees">
+        <tr><th>Produit</th><th>Part Thermiko</th><th>Leader du marché</th><th>N° 2 du marché</th></tr>
+        <tr><td>A – pompes à chaleur</td><td class="num">18 %</td><td>Thermiko</td><td class="num">12 %</td></tr>
+        <tr><td>B – climatisation</td><td class="num">25 %</td><td>Thermiko</td><td class="num">15 %</td></tr>
+        <tr><td>C – pilotage connecté</td><td class="num">5 %</td><td class="num">20 %</td><td>–</td></tr>
+      </table>
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Calcule la part de marché relative de chaque produit. Arrondis à 0,01.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Explique pourquoi on divise par le n° 2 pour les produits A et B.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> une part relative supérieure à 1 veut dire « leader ». Elle ne peut jamais dépasser 1 si l'entreprise n'est pas leader.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span>
+        <code>A : 18 ÷ 12 = 1,50</code>
+        <code>B : 25 ÷ 15 = 1,67</code>
+        <code>C : 5 ÷ 20 = 0,25</code>
+      </div>
+      <div class="corr-etape"><span class="c-num">2</span> Thermiko est leader sur A et B. On le compare à son concurrent le plus proche, le n° 2. Diviser 18 % par 18 % donnerait 1 et ne dirait rien de son avance.
+        <p class="conclu">Sur C, Thermiko pèse 4 fois moins que le leader : position faible.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 6 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 6</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Calculer la croissance des marchés</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Léa relève la taille des marchés français, en millions d'euros (données fictives).
+    </div>
+    <div class="table-wrap">
+      <table class="tableau-donnees">
+        <tr><th>Marché</th><th>N-1 (M€)</th><th>N (M€)</th></tr>
+        <tr><td>A – pompes à chaleur</td><td class="num">400</td><td class="num">480</td></tr>
+        <tr><td>B – climatisation</td><td class="num">500</td><td class="num">520</td></tr>
+        <tr><td>C – pilotage connecté</td><td class="num">50</td><td class="num">60</td></tr>
+        <tr><td>D – chaudières gaz</td><td class="num">300</td><td class="num">270</td></tr>
+      </table>
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Calcule le taux de croissance de chaque marché.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Classe chaque marché en « forte » ou « faible » croissance, avec la limite de 10 %.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> un marché qui baisse donne un taux négatif. Il est classé en faible croissance.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <table class="tableau-corr">
+        <tr><th>Marché</th><th>Calcul</th><th>Taux</th><th>Croissance</th></tr>
+        <tr><td>A</td><td>(480 – 400) ÷ 400 × 100</td><td class="val">+20 %</td><td>forte</td></tr>
+        <tr><td>B</td><td>(520 – 500) ÷ 500 × 100</td><td class="val">+4 %</td><td>faible</td></tr>
+        <tr><td>C</td><td>(60 – 50) ÷ 50 × 100</td><td class="val">+20 %</td><td>forte</td></tr>
+        <tr><td>D</td><td>(270 – 300) ÷ 300 × 100</td><td class="val">-10 %</td><td>faible (recul)</td></tr>
+      </table>
+      <p class="conclu">Les calculs confirment les classements de l'exercice 1.</p>
+    </div>
+  </div>
+</details>
+
+<!-- EX 7 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 7</span>
+    <span class="badge badge-2">◆ intermédiaire</span>
+    <span class="exo-titre-txt">Le nouveau produit et le poids de chaque produit</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Thermiko ajoute un produit E à son portefeuille : les <strong>ballons thermodynamiques</strong> (eau chaude sanitaire). Le marché passe de 80 M€ en N-1 à 92 M€ en N. Thermiko détient 6 % du marché. Le leader en détient 15 %.
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Calcule le taux de croissance et la part de marché relative du produit E.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Place le produit E dans la matrice.</p></div>
+      <div class="question"><span class="q-num">3</span><p>Calcule le chiffre d'affaires N de Thermiko pour chaque produit (A à E), avec les exercices 5 et 6. Pour D, Thermiko détient 8 % du marché.</p></div>
+      <div class="question"><span class="q-num">4</span><p>Calcule le poids de chaque produit dans le chiffre d'affaires total.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> chiffre d'affaires = taille du marché N × part de marché de Thermiko.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span>
+        <code>Croissance : (92 – 80) ÷ 80 × 100 = +15 %</code>
+        <code>Part relative : 6 ÷ 15 = 0,40</code>
+      </div>
+      <div class="corr-etape"><span class="c-num">2</span> Forte croissance et part relative inférieure à 1 : <span class="res">dilemme</span>.</div>
+      <div class="corr-etape"><span class="c-num">3</span> et <span class="c-num">4</span>
+        <table class="tableau-corr">
+          <tr><th>Produit</th><th>Calcul</th><th>CA N</th><th>Poids</th></tr>
+          <tr><td>A – pompes à chaleur</td><td>480 × 18 %</td><td class="val">86,4 M€</td><td>35,0 %</td></tr>
+          <tr><td>B – climatisation</td><td>520 × 25 %</td><td class="val">130 M€</td><td>52,7 %</td></tr>
+          <tr><td>C – pilotage connecté</td><td>60 × 5 %</td><td class="val">3 M€</td><td>1,2 %</td></tr>
+          <tr><td>D – chaudières gaz</td><td>270 × 8 %</td><td class="val">21,6 M€</td><td>8,8 %</td></tr>
+          <tr><td>E – ballons</td><td>92 × 6 %</td><td class="val">5,52 M€</td><td>2,2 %</td></tr>
+          <tr><td><strong>Total</strong></td><td></td><td class="val">246,52 M€</td><td>100 %</td></tr>
+        </table>
+        <p class="conclu">Plus de la moitié du chiffre d'affaires vient de la vache à lait. Les 2 dilemmes ne pèsent que 3,4 %.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 8 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 8</span>
+    <span class="badge badge-exam">★ examen</span>
+    <span class="exo-titre-txt">Construire la matrice au tableur</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Karim veut la matrice de Thermiko en image pour la réunion commerciale de lundi. Léa utilise un tableur (Excel, LibreOffice Calc ou Google Sheets).
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Saisis un tableau avec 4 colonnes : produit, part relative, croissance, chiffre d'affaires.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Crée un graphique à bulles avec ces données.</p></div>
+      <div class="question"><span class="q-num">3</span><p>Fais couper les axes à 1 (part relative) et à 10 % (croissance).</p></div>
+      <div class="question"><span class="q-num">4</span><p>Ajoute le nom des 4 cases et le titre « Matrice BCG Thermiko – année N ».</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> cherche « graphique à bulles » dans le menu insertion. Le réglage du croisement des axes se trouve dans le format de l'axe.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span>
+        <table class="tableau-corr">
+          <tr><th>Produit</th><th>Part relative</th><th>Croissance</th><th>CA (M€)</th></tr>
+          <tr><td>A</td><td>1,50</td><td>20 %</td><td>86,4</td></tr>
+          <tr><td>B</td><td>1,67</td><td>4 %</td><td>130</td></tr>
+          <tr><td>C</td><td>0,25</td><td>20 %</td><td>3</td></tr>
+          <tr><td>D</td><td>0,33</td><td>-10 %</td><td>21,6</td></tr>
+          <tr><td>E</td><td>0,40</td><td>15 %</td><td>5,52</td></tr>
+        </table>
+      </div>
+      <div class="corr-etape"><span class="c-num">2</span> Axe horizontal = part relative · axe vertical = croissance · taille des bulles = chiffre d'affaires.</div>
+      <div class="corr-etape"><span class="c-num">3</span> Format de l'axe horizontal : l'axe vertical le coupe à 1. Format de l'axe vertical : l'axe horizontal le coupe à 10 %. Option : « valeurs en ordre inverse » sur l'axe horizontal pour mettre les fortes parts à gauche.</div>
+      <div class="corr-etape"><span class="c-num">4</span> Zones de texte : vedettes, vaches à lait, dilemmes, poids morts.
+        <p class="conclu">Le graphique doit être lisible en 5 secondes : c'est un outil de présentation, pas seulement de calcul.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<hr class="section-sep">
+
+<!-- ══════════════════════════════════════════════════════════
+     BLOC 3 – DÉCIDER (séance 3)
+══════════════════════════════════════════════════════════ -->
+<div class="bloc-titre" id="decider" style="margin-top:40px">
+  <span class="icone">🧭</span>
+  <h2><small>Séance 3 · 55 min</small>Bloc 3 – Décider : stratégies et limites</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 mémo</div>
+  <code>Vedette : investir pour garder ou gagner le leadership. Elle deviendra une vache à lait quand le marché ralentira.</code>
+  <code>Vache à lait : maintenir la position avec peu d'investissement. Ses bénéfices financent les autres produits.</code>
+  <code>Dilemme : investir de façon sélective sur les plus prometteurs, ou renoncer.</code>
+  <code>Poids mort : réduire l'investissement, jusqu'à un équilibre avec la rentabilité, voire abandonner.</code>
+  <code>Portefeuille équilibré = des vaches à lait pour financer, des vedettes pour la croissance, des dilemmes pour préparer l'avenir.</code>
+  <code>Limites : part de marché ≠ rentabilité · ignore les synergies entre produits · photo à un instant donné, à mettre à jour souvent · seulement 2 critères.</code>
+  <p class="note">Outils complémentaires : PESTEL, SWOT, matrice McKinsey. Déroulé : 10 min mémo · 5 min ex. 9 · 10 min ex. 10 · 15 min ex. 11 (jeu du budget) · 15 min ex. 12 (débat).</p>
+</div>
+
+<!-- EX 9 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 9</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Une stratégie par case</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Karim affiche 4 décisions prises en comité de direction. Il faut retrouver le produit concerné.
+    </div>
+    <div class="table-wrap">
+      <table class="tableau-donnees">
+        <tr><th>Décision</th></tr>
+        <tr><td>1. Recruter 2 techniciens pour la mise en service et doubler la capacité de production.</td></tr>
+        <tr><td>2. Ne plus développer de nouveaux modèles et écouler le stock existant.</td></tr>
+        <tr><td>3. Garder les prix et les budgets actuels, sans nouvelle campagne.</td></tr>
+        <tr><td>4. Tester l'offre sur un seul segment (les cliniques) avant de décider d'investir plus.</td></tr>
+      </table>
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Associe chaque décision à un produit de Thermiko (A, B, C ou D).</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> qui demande beaucoup d'argent ? Qui en rapporte sans effort ? Qui est incertain ?</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <table class="tableau-corr">
+        <tr><th>Décision</th><th>Produit</th><th>Case</th></tr>
+        <tr><td>1</td><td>A – pompes à chaleur</td><td class="val">vedette : investir</td></tr>
+        <tr><td>2</td><td>D – chaudières gaz</td><td class="val">poids mort : réduire</td></tr>
+        <tr><td>3</td><td>B – climatisation</td><td class="val">vache à lait : maintenir</td></tr>
+        <tr><td>4</td><td>C – pilotage connecté</td><td class="val">dilemme : investir de façon ciblée</td></tr>
+      </table>
+    </div>
+  </div>
+</details>
+
+<!-- EX 10 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 10</span>
+    <span class="badge badge-2">◆ intermédiaire</span>
+    <span class="exo-titre-txt">Qui finance qui ?</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Hugo demande : « Si les pompes à chaleur marchent si bien, pourquoi la direction dit qu'elles coûtent cher ? ». Léa reprend le tableau de l'exercice 7.
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Explique d'où vient l'argent qui finance les pompes à chaleur et le pilotage connecté.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Dis si le portefeuille de Thermiko est équilibré. Justifie avec 2 chiffres.</p></div>
+      <div class="question"><span class="q-num">3</span><p>Décris ce qui arrivera aux pompes à chaleur quand leur marché ralentira.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> une vedette doit suivre un marché qui grandit vite : production, stocks, formation, publicité.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span> De la <span class="res">climatisation (vache à lait)</span> : marché mature, Thermiko leader, peu de dépenses nouvelles. Ses bénéfices financent la vedette et les dilemmes.</div>
+      <div class="corr-etape"><span class="c-num">2</span> Assez fragile :
+        <code>52,7 % du chiffre d'affaires dépend d'un marché à +4 %.</code>
+        <code>Les dilemmes (C et E) ne pèsent que 3,4 % : peu de relais pour l'avenir.</code>
+        La vedette (35 %) est un point fort.
+      </div>
+      <div class="corr-etape"><span class="c-num">3</span> Si Thermiko reste leader, elles deviendront une <span class="res">vache à lait</span>.
+        <p class="conclu">Le cycle idéal : dilemme → vedette → vache à lait. Les vaches à lait financent les nouveaux dilemmes.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 11 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 11</span>
+    <span class="badge badge-2">◆ intermédiaire</span>
+    <span class="exo-titre-txt">Le jeu du budget : 200 000 € à répartir</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Karim dispose de <strong>200 000 €</strong> de budget d'actions commerciales pour l'année N+1 : salons, démonstrations, formation des installateurs, campagnes digitales. Par équipes de 3, vous répartissez ce budget entre les 5 produits. Chaque équipe projette son tableau et le défend en 2 minutes. Le groupe vote pour la répartition la mieux justifiée.
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Répartis les 200 000 € entre A, B, C, D et E.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Justifie chaque montant par la position du produit dans la matrice.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> il n'y a pas une seule bonne réponse. Ce qui compte, c'est la cohérence entre la case et le montant.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span> Exemple de répartition cohérente :
+        <table class="tableau-corr">
+          <tr><th>Produit</th><th>Montant</th><th>Justification</th></tr>
+          <tr><td>A – vedette</td><td class="val">80 000 €</td><td>Défendre le leadership sur un marché qui grandit.</td></tr>
+          <tr><td>C – dilemme</td><td class="val">50 000 €</td><td>Investissement ciblé sur un segment (cliniques).</td></tr>
+          <tr><td>B – vache à lait</td><td class="val">40 000 €</td><td>Entretenir la fidélité des installateurs, sans plus.</td></tr>
+          <tr><td>E – dilemme</td><td class="val">20 000 €</td><td>Tester l'offre avant de décider.</td></tr>
+          <tr><td>D – poids mort</td><td class="val">10 000 €</td><td>Le minimum pour servir les clients existants.</td></tr>
+        </table>
+      </div>
+      <div class="corr-etape"><span class="c-num">2</span>
+        <p class="conclu">Une équipe qui met plus d'argent sur D que sur A doit avoir un argument fort (par exemple un gros contrat d'entretien en cours).</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 12 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 12</span>
+    <span class="badge badge-exam">★ examen</span>
+    <span class="exo-titre-txt">Faut-il arrêter les chaudières gaz ?</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      En réunion, Karim propose d'arrêter les chaudières gaz. Léa n'est pas d'accord : « Mes clients qui ont une chaudière Thermiko signent aussi un contrat d'entretien. Et c'est souvent eux qui m'achètent ensuite une pompe à chaleur. » Par ailleurs, la réglementation environnementale RE2020 limite fortement le gaz dans les bâtiments neufs, et le décret BACS oblige progressivement certains bâtiments tertiaires à s'équiper de systèmes d'automatisation et de contrôle.
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Relève l'argument de Léa qui montre une limite de la matrice BCG.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Explique ce que la réglementation change pour les produits D et C.</p></div>
+      <div class="question"><span class="q-num">3</span><p>Propose une décision pour les chaudières gaz, en 3 lignes.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> la matrice regarde chaque produit seul. Que se passe-t-il quand un produit aide à vendre un autre produit ?</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span> Les <span class="res">synergies</span> : les chaudières apportent des contrats d'entretien et des clients qui achètent ensuite une pompe à chaleur. La matrice ne voit pas ces liens.</div>
+      <div class="corr-etape"><span class="c-num">2</span>
+        <code>D : la RE2020 réduit le marché du gaz dans le neuf. Le recul devrait continuer.</code>
+        <code>C : le décret BACS crée une demande obligatoire. Le dilemme a un vrai potentiel.</code>
+        Ce sont des facteurs politiques et légaux (PESTEL) que la matrice ne montre pas seule.
+      </div>
+      <div class="corr-etape"><span class="c-num">3</span> Exemple :
+        <code>Ne plus investir dans de nouveaux modèles, garder le service et l'entretien, et utiliser chaque remplacement de chaudière pour proposer une pompe à chaleur.</code>
+        <p class="conclu">La matrice donne une première analyse. La décision se prend avec d'autres outils et avec le terrain.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<hr class="section-sep">
+
+<!-- ══════════════════════════════════════════════════════════
+     BLOC 4 – NÉGOCIER AVEC LA MATRICE (séance 4)
+══════════════════════════════════════════════════════════ -->
+<div class="bloc-titre" id="negocier" style="margin-top:40px">
+  <span class="icone">🤝</span>
+  <h2><small>Séance 4 · 55 min</small>Bloc 4 – Négocier avec la matrice</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 mémo</div>
+  <code>La position du produit dans la matrice oriente l'objectif stratégique de l'entreprise, donc les objectifs de négociation du technico-commercial.</code>
+  <code>Vedette : conquérir et défendre le prix · arguments : leadership, innovation, références clients.</code>
+  <code>Vache à lait : fidéliser et sécuriser les renouvellements · arguments : fiabilité, parc installé, services associés.</code>
+  <code>Dilemme : obtenir des premières références · arguments : nouveauté, essai, accompagnement · concessions possibles pour décrocher un client pilote.</code>
+  <code>Poids mort : servir les clients existants et préparer la migration vers une offre plus porteuse.</code>
+  <p class="note">Ce lien entre politique commerciale et objectifs de négociation correspond aux critères « contexte technico-commercial identifié » et « objectifs de négociation définis et adaptés » de l'E5. Déroulé : 10 min mémo · 5 min ex. 13 · 15 min ex. 14 · 25 min ex. 15 (jeu de rôle en trios, 3 rotations).</p>
+</div>
+
+<!-- EX 13 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 13</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Un objectif de négociation par produit</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Léa prépare sa semaine. Elle a 4 rendez-vous, chacun sur un produit différent.
+    </div>
+    <div class="table-wrap">
+      <table class="tableau-donnees">
+        <tr><th>Rendez-vous</th><th>Produit</th></tr>
+        <tr><td>Un installateur fidèle qui renouvelle sa commande annuelle de climatiseurs</td><td>B</td></tr>
+        <tr><td>Une clinique qui découvre le pilotage connecté</td><td>C</td></tr>
+        <tr><td>Un bureau d'études qui compare 3 marques de pompes à chaleur</td><td>A</td></tr>
+        <tr><td>Une résidence qui veut changer une chaudière gaz à l'identique</td><td>D</td></tr>
+      </table>
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Fixe un objectif de négociation pour chaque rendez-vous.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> un bon objectif commence par un verbe : obtenir, signer, défendre, faire tester…</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <table class="tableau-corr">
+        <tr><th>Produit</th><th>Objectif possible</th></tr>
+        <tr><td>B – vache à lait</td><td class="val">Signer le renouvellement sans remise supplémentaire et ajouter un contrat d'entretien.</td></tr>
+        <tr><td>C – dilemme</td><td class="val">Obtenir un essai sur un bâtiment pour en faire une référence.</td></tr>
+        <tr><td>A – vedette</td><td class="val">Faire prescrire Thermiko par le bureau d'études en défendant le prix.</td></tr>
+        <tr><td>D – poids mort</td><td class="val">Faire étudier une pompe à chaleur, et garder la chaudière en solution de repli.</td></tr>
+      </table>
+    </div>
+  </div>
+</details>
+
+<!-- EX 14 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 14</span>
+    <span class="badge badge-2">◆ intermédiaire</span>
+    <span class="exo-titre-txt">Préparer le rendez-vous de M. Garnier</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      <strong>M. Garnier</strong> est responsable des services techniques d'un groupe de 4 résidences seniors. Les chaudières gaz de la résidence « Les Tilleuls » ont 18 ans. Il veut les remplacer à l'identique : « Je connais, et je n'ai pas le temps pour un gros chantier. » Karim fixe le cadre : remise maximale de 5 % sur les pompes à chaleur, et le module de pilotage connecté peut être offert 6 mois en essai.
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Rédige l'objectif principal et l'objectif de repli de Léa.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Explique le lien entre ces objectifs et la matrice de Thermiko.</p></div>
+      <div class="question"><span class="q-num">3</span><p>Rédige 3 arguments adaptés aux attentes de M. Garnier.</p></div>
+      <div class="question"><span class="q-num">4</span><p>Prépare une réponse à l'objection « une pompe à chaleur, c'est plus cher ».</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> pars des attentes réelles du client (simplicité, délai, confort des résidents) avant de parler du produit.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span>
+        <code>Objectif principal : faire signer une étude puis un devis de pompes à chaleur, avec l'essai du pilotage connecté.</code>
+        <code>Objectif de repli : vendre les chaudières avec un contrat d'entretien et obtenir un rendez-vous pour étudier les 3 autres résidences.</code>
+      </div>
+      <div class="corr-etape"><span class="c-num">2</span> La pompe à chaleur est la vedette : Thermiko veut développer ses ventes. Le pilotage est un dilemme : un client pilote crée une référence. La chaudière est un poids mort : on la garde en repli, sans la pousser.</div>
+      <div class="corr-etape"><span class="c-num">3</span> Exemples :
+        <code>Simplicité : Thermiko gère l'étude, l'installation et la mise en service, avec un seul interlocuteur.</code>
+        <code>Avenir : le gaz recule et la réglementation se durcit. La pompe à chaleur évite de remplacer deux fois.</code>
+        <code>Confort et suivi : le pilotage connecté permet de suivre la température des résidences à distance, testé gratuitement 6 mois.</code>
+      </div>
+      <div class="corr-etape"><span class="c-num">4</span> Méthode : reformuler, puis raisonner en coût global.
+        <code>« Vous avez raison, l'investissement de départ est plus élevé. Comparons le coût sur 15 ans : énergie, entretien et aides mobilisables. Je vous prépare ce calcul pour les Tilleuls. »</code>
+        <p class="conclu">Ne pas annoncer de chiffres d'économies sans étude : les aides et les gains se vérifient au cas par cas.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 15 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 15</span>
+    <span class="badge badge-exam">★ examen</span>
+    <span class="exo-titre-txt">Jeu de rôle : Léa face à M. Garnier</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Par trios : un vendeur (Léa), un client (M. Garnier), un observateur. Chaque simulation dure 6 minutes, puis 2 minutes de retour de l'observateur. On tourne 3 fois pour que chacun joue chaque rôle. La grille d'observation est projetée.
+    </div>
+    <div class="table-wrap">
+      <table class="tableau-donnees">
+        <tr><th>Grille de l'observateur</th><th>Oui / non</th></tr>
+        <tr><td>Le vendeur découvre les attentes du client avant d'argumenter.</td><td></td></tr>
+        <tr><td>Il propose la solution prioritaire (pompe à chaleur).</td><td></td></tr>
+        <tr><td>Il utilise au moins 2 arguments adaptés aux attentes.</td><td></td></tr>
+        <tr><td>Il traite l'objection sur le prix.</td><td></td></tr>
+        <tr><td>Il reste dans le cadre fixé (remise, essai).</td><td></td></tr>
+        <tr><td>Il obtient un engagement (étude, devis ou rendez-vous).</td><td></td></tr>
+      </table>
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Joue la simulation avec les arguments de l'exercice 14.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Note, en tant qu'observateur, un point fort et un point à améliorer.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> le client peut résister, mais il doit rester réaliste. Il accepte si les arguments répondent à ses vraies attentes.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span> Déroulé attendu : prise de contact · découverte (âge des équipements, contraintes de chantier, budget, délais) · reformulation · proposition de la pompe à chaleur · essai du pilotage · traitement des objections · engagement.</div>
+      <div class="corr-etape"><span class="c-num">2</span> Erreurs fréquentes :
+        <code>Parler produit avant d'avoir découvert les besoins.</code>
+        <code>Donner les 5 % de remise dès la première objection.</code>
+        <code>Repartir sans date ni engagement.</code>
+        <p class="conclu">À l'E5, la commission évalue aussi la capacité à analyser sa simulation : garde les retours de l'observateur.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<hr class="section-sep">
+
+<!-- ══════════════════════════════════════════════════════════
+     BLOC 5 – SUJETS TYPE E5 (séance 5)
+══════════════════════════════════════════════════════════ -->
+<div class="bloc-titre" id="examen" style="margin-top:40px">
+  <span class="icone">🎓</span>
+  <h2><small>Séance 5 · 55 min</small>Bloc 5 – Sujets type E5</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 mémo</div>
+  <code>Fiche descriptive (à rendre en février) : la matrice aide à présenter le contexte technico-commercial et la place de la solution négociée dans l'offre de l'entreprise.</code>
+  <code>Exposé : expliquer en quoi la position du produit justifie les objectifs de négociation choisis.</code>
+  <code>Simulation sur situation modifiée : quand un paramètre change, repositionner le produit et adapter les objectifs.</code>
+  <code>Ne jamais inventer de chiffres : si l'entreprise ne les donne pas, raisonner par positions relatives et le dire.</code>
+  <p class="note">Déroulé : 5 min mémo · 15 min ex. 16 · 15 min ex. 17 (préparation et simulation) · 20 min ex. 18 (sujet complet, correction projetée).</p>
+</div>
+
+<!-- EX 16 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 16</span>
+    <span class="badge badge-exam">★ examen</span>
+    <span class="exo-titre-txt">La matrice de mon entreprise d'accueil</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Tu prépares la fiche descriptive de ta situation de négociation E5. Tu veux situer la solution négociée dans l'offre de ton entreprise d'accueil.
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Liste 3 à 5 produits ou familles de produits de ton entreprise.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Indique tes sources pour chacun : tuteur, site, études de marché, rapports annuels.</p></div>
+      <div class="question"><span class="q-num">3</span><p>Place-les dans une matrice construite au tableur.</p></div>
+      <div class="question"><span class="q-num">4</span><p>Rédige 5 lignes pour ta fiche : place du produit négocié et conséquence sur tes objectifs.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> sans chiffres précis, demande à ton tuteur : « sur ce produit, sommes-nous devant ou derrière le concurrent principal ? Le marché grandit-il ? ».</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span> et <span class="c-num">2</span> Chaque produit doit avoir une source. Une estimation est acceptée si elle est présentée comme telle.</div>
+      <div class="corr-etape"><span class="c-num">3</span> Avec des estimations, utiliser des positions relatives (forte/faible) plutôt que des valeurs exactes.</div>
+      <div class="corr-etape"><span class="c-num">4</span> Trame :
+        <code>« Dans l'offre de [entreprise], [produit] est une [case] : son marché [croît fortement / ralentit] et nous sommes [leader / suiveur]. La stratégie de l'entreprise est donc de [investir / maintenir / tester / réduire]. Mon objectif de négociation était de [objectif], en cohérence avec cette stratégie. »</code>
+        <p class="conclu">Cette trame se réutilise à l'oral pour présenter le contexte en moins d'une minute.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 17 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 17</span>
+    <span class="badge badge-exam">★ examen</span>
+    <span class="exo-titre-txt">Changement de paramètre : la fin des chaudières</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      La commission modifie la situation de l'exercice 14 : <strong>Thermiko annonce l'arrêt de la gamme chaudières gaz dans 6 mois.</strong> Les pièces détachées restent disponibles. M. Garnier, lui, veut toujours une chaudière.
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Explique ce que cette décision signifie dans la logique de la matrice.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Modifie l'objectif principal et l'objectif de repli de Léa.</p></div>
+      <div class="question"><span class="q-num">3</span><p>Prépare la façon d'annoncer la nouvelle au client sans le perdre.</p></div>
+      <div class="question"><span class="q-num">4</span><p>Joue la simulation en binôme pendant 8 minutes devant le groupe.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> l'information doit devenir un argument, pas un obstacle. Que risque M. Garnier s'il installe un produit bientôt arrêté ?</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span> Thermiko applique la stratégie d'<span class="res">abandon du poids mort</span> et concentre ses moyens sur la vedette et les dilemmes.</div>
+      <div class="corr-etape"><span class="c-num">2</span>
+        <code>Objectif principal : signer l'étude des pompes à chaleur pour les Tilleuls, avec l'essai du pilotage connecté.</code>
+        <code>Objectif de repli : garder le client avec un contrat d'entretien des chaudières actuelles et fixer une date d'étude.</code>
+      </div>
+      <div class="corr-etape"><span class="c-num">3</span> Exemple :
+        <code>« Je préfère être transparente avec vous : nous arrêtons les chaudières gaz dans 6 mois. Les pièces restent disponibles, mais installer un modèle en fin de vie vous exposerait à un nouveau remplacement plus tôt. Je vous propose une solution pensée pour les 15 prochaines années. »</code>
+      </div>
+      <div class="corr-etape"><span class="c-num">4</span>
+        <p class="conclu">À l'examen, la commission attend une adaptation rapide : identifier ce qui change, revoir les objectifs, garder la relation client.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 18 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 18</span>
+    <span class="badge badge-exam">★ examen</span>
+    <span class="exo-titre-txt">Sujet complet : le portefeuille de Sécuritec</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      <strong>Sécuritec</strong> (entreprise fictive) vend des solutions de sécurité aux entreprises. <strong>Inès</strong>, technico-commerciale, doit rencontrer le directeur d'un entrepôt logistique qui veut renforcer la sécurité de son site. La limite de croissance retenue est 10 %.
+    </div>
+    <div class="table-wrap">
+      <table class="tableau-donnees">
+        <tr><th>Produit</th><th>Marché N-1 (M€)</th><th>Marché N (M€)</th><th>Part Sécuritec</th><th>Concurrent principal</th></tr>
+        <tr><td>Alarmes filaires</td><td class="num">120</td><td class="num">108</td><td class="num">6 %</td><td>leader : 20 %</td></tr>
+        <tr><td>Vidéosurveillance IP</td><td class="num">200</td><td class="num">216</td><td class="num">22 %</td><td>n° 2 : 11 %</td></tr>
+        <tr><td>Contrôle d'accès par smartphone</td><td class="num">40</td><td class="num">50</td><td class="num">15 %</td><td>n° 2 : 10 %</td></tr>
+        <tr><td>Télésurveillance avec analyse vidéo automatique</td><td class="num">30</td><td class="num">39</td><td class="num">4 %</td><td>leader : 16 %</td></tr>
+      </table>
+    </div>
+    <div class="questions">
+      <div class="question"><span class="q-num">1</span><p>Calcule la croissance, la part relative et le chiffre d'affaires de chaque produit.</p></div>
+      <div class="question"><span class="q-num">2</span><p>Classe chaque produit dans la matrice.</p></div>
+      <div class="question"><span class="q-num">3</span><p>Propose une stratégie pour chaque produit.</p></div>
+      <div class="question"><span class="q-num">4</span><p>Fixe l'objectif principal d'Inès pour l'entrepôt et justifie-le avec la matrice.</p></div>
+      <div class="question"><span class="q-num">5</span><p>Cite une limite de ton analyse.</p></div>
+    </div>
+    <div class="ordre-grandeur"><strong>Coup de pouce :</strong> commence par le tableau de calcul. Les questions 2 à 4 en découlent.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape"><span class="c-num">1</span> et <span class="c-num">2</span>
+        <table class="tableau-corr">
+          <tr><th>Produit</th><th>Croissance</th><th>Part relative</th><th>CA N</th><th>Case</th></tr>
+          <tr><td>Alarmes filaires</td><td>-10 %</td><td>6 ÷ 20 = 0,30</td><td>6,48 M€</td><td class="val">poids mort</td></tr>
+          <tr><td>Vidéosurveillance IP</td><td>+8 %</td><td>22 ÷ 11 = 2,00</td><td>47,52 M€</td><td class="val">vache à lait</td></tr>
+          <tr><td>Contrôle d'accès</td><td>+25 %</td><td>15 ÷ 10 = 1,50</td><td>7,5 M€</td><td class="val">vedette</td></tr>
+          <tr><td>Télésurveillance</td><td>+30 %</td><td>4 ÷ 16 = 0,25</td><td>1,56 M€</td><td class="val">dilemme</td></tr>
+        </table>
+      </div>
+      <div class="corr-etape"><span class="c-num">3</span>
+        <code>Alarmes filaires : réduire l'investissement, servir le parc existant.</code>
+        <code>Vidéosurveillance : maintenir, fidéliser, financer les autres produits.</code>
+        <code>Contrôle d'accès : investir pour rester leader.</code>
+        <code>Télésurveillance : investir de façon ciblée (par exemple sur la logistique) ou renoncer.</code>
+      </div>
+      <div class="corr-etape"><span class="c-num">4</span> Exemple :
+        <code>Vendre la vidéosurveillance (base solide) et ajouter le contrôle d'accès (vedette), en proposant un essai de télésurveillance pour faire de l'entrepôt une référence dans la logistique.</code>
+        La proposition doit d'abord répondre aux besoins découverts chez le client. La matrice oriente les priorités, elle ne remplace pas la découverte.
+      </div>
+      <div class="corr-etape"><span class="c-num">5</span> Exemple : la part de marché ne dit rien de la marge. Les alarmes filaires peuvent rester rentables grâce aux contrats de maintenance.
+        <p class="conclu">Barème indicatif sur 20 : calculs 6 · classement 3 · stratégies 4 · objectif justifié 5 · limite 2.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+</main>
+
+<footer class="site-footer">
+  BTS CCST – Pôle 1, épreuve E5 &nbsp;|&nbsp; La matrice BCG au service de la négociation &nbsp;|&nbsp; 18 exercices progressifs
+</footer>
+
+<script>
+function toggleCorr(btn) {
+  const corr = btn.nextElementSibling;
+  const isVisible = corr.classList.contains('visible');
+  corr.classList.toggle('visible', !isVisible);
+  btn.textContent = isVisible ? '✅ Voir la correction' : '🔒 Masquer la correction';
+}
+</script>
+</body>
+</html>
